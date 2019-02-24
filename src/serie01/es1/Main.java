@@ -48,6 +48,17 @@ public class Main {
         return  allThreads;
     }
 
+//    public static Collection<Thread> createThreadsUsingLambda(){
+//        Collection<Thread> allThreads = new ArrayList<Thread>();
+//        for (int i = 1; i <= 5; i++) {
+//            System.out.println("Main: creo thread " + i);
+//            Thread t = new Thread(new MyThreadExtendsRunnable());
+//            allThreads.add(t);
+//        }
+//        return  allThreads;
+//        Thread thread3 = new Thread(() -> System.out.println("Esecuzione Task #3"));
+//    }
+
     public static void main(String[] args) {
 
         // Using Thread defined by anonymous inner class
