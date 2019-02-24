@@ -1,17 +1,23 @@
 package serie01.es2;
 
 public class MyThread implements Runnable {
+
+    private int timeToSleep;
+
+    MyThread(int timeToSleep){
+        this.timeToSleep=timeToSleep;
+    }
+
     @Override
     public void run() {
-
-        int timeToSleep;
-        timeToSleep = (int)(Math.random() * 2000) + 1500;
-
         try {
-            Thread.sleep(timeToSleep);
+            Thread.sleep(this.timeToSleep);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
+    int getTimeToSleep() {
+        return timeToSleep;
     }
 }
