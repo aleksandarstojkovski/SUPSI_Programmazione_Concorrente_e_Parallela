@@ -32,14 +32,12 @@ public class Main {
         for (Map.Entry<Thread,MyThread> me : mapThreadRunnable.entrySet()){
             try {
                 me.getKey().join();
-                System.out.println(me.getKey().getName() + " risvegliato dopo " + me.getValue().getTimeToSleep() + "ms");
+                System.out.println(me.getKey().getName() + " risvegliato dopo " + me.getValue().getTimeElapsed() + "ms. Gli e' stato chiesto di dormire per " + me.getValue().getTimeToSleep() + "ms");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
 
-
     }
-
 
 }
