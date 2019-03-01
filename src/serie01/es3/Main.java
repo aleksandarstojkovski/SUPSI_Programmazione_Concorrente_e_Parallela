@@ -18,7 +18,6 @@ public class Main {
         }
 
         System.out.println("Creo " + numberOfThreads + " threads");
-
         for (int i=0;i<10;i++){
             MyThread mt = new MyThread(array,firstElementOfIntervall,secondElementOfIntervall);
             Thread t = new Thread(mt);
@@ -28,7 +27,6 @@ public class Main {
         }
 
         System.out.println("Starto i " + numberOfThreads + " threads");
-
         for (Thread t : listOfThreads){
             t.start();
         }
