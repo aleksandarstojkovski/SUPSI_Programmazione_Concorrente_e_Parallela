@@ -15,8 +15,6 @@ public class Main {
         System.out.println("Riempio l'array di " + array.length + " elementi random");
         for(int i=0;i<array.length;i++){
             array[i]=(int) (Math.random() * (100 - 1)) + 1;
-            // debbug
-            // array[i]=1;
         }
 
         System.out.println("Creo " + numberOfThreads + " threads");
@@ -25,8 +23,8 @@ public class Main {
             MyThread mt = new MyThread(array,firstElementOfIntervall,secondElementOfIntervall);
             Thread t = new Thread(mt);
             listOfThreads.add(t);
-            firstElementOfIntervall+=1000;
-            secondElementOfIntervall+=1000;
+            firstElementOfIntervall+=10000;
+            secondElementOfIntervall+=10000;
         }
 
         System.out.println("Starto i " + numberOfThreads + " threads");

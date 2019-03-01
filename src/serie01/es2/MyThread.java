@@ -6,6 +6,7 @@ public class MyThread implements Runnable {
 
     private long startTime;
     private long endTime;
+    private String threadId;
     private long timeElapsed;
     private int timeToSleep;
 
@@ -20,6 +21,7 @@ public class MyThread implements Runnable {
             Thread.sleep(this.timeToSleep);
             endTime = System.nanoTime();
             timeElapsed = endTime - startTime;
+            System.out.println(this.threadId + " risvegliato dopo " + getTimeElapsed() + "ms. Gli e' stato chiesto di dormire per " + getTimeToSleep() + "ms");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -31,5 +33,9 @@ public class MyThread implements Runnable {
 
     int getTimeToSleep() {
         return timeToSleep;
+    }
+
+    public void setThreadId(String threadId) {
+        this.threadId = threadId;
     }
 }

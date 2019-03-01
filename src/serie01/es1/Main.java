@@ -5,6 +5,16 @@ import java.util.Collection;
 
 public class Main {
 
+    private static long fibonacci(){
+        long fibo1 = 1, fibo2 = 1, fibonacci = 1;
+        for (int i = 3; i <= 700; i++) {
+            fibonacci = fibo1 + fibo2;
+            fibo1 = fibo2;
+            fibo2 = fibonacci;
+        }
+        return fibonacci;
+    }
+
     public static Collection<Thread> createThreadsWithAnonymousInnerClass(){
         Collection<Thread> allThreads = new ArrayList<Thread>();
         for (int i = 1; i <= 5; i++) {
@@ -48,15 +58,8 @@ public class Main {
         return  allThreads;
     }
 
-//    public static Collection<Thread> createThreadsUsingLambda(){
-//        Collection<Thread> allThreads = new ArrayList<Thread>();
-//        for (int i = 1; i <= 5; i++) {
-//            System.out.println("Main: creo thread " + i);
-//            Thread t = new Thread(new MyThreadExtendsRunnable());
-//            allThreads.add(t);
-//        }
-//        return  allThreads;
-//        Thread thread3 = new Thread(() -> System.out.println("Esecuzione Task #3"));
+//    public static void createThreadsUsingLambda(){
+//        (thread) -> new Thread(()-> System.out.println(thread + " : " + fibonacci()) );
 //    }
 
     public static void main(String[] args) {
@@ -65,10 +68,10 @@ public class Main {
         // Collection<Thread> allThreads = createThreadsWithAnonymousInnerClass();
 
         // Using Thread that extends Thread
-        Collection<Thread> allThreads = createThreadsUsingMyThreadExtendsThread();
+        // Collection<Thread> allThreads = createThreadsUsingMyThreadExtendsThread();
 
         // Using Thread that extends Runnable
-        // Collection<Thread> allThreads = createThreadsUsingMyThreadImplementsRunnable();
+        Collection<Thread> allThreads = createThreadsUsingMyThreadImplementsRunnable();
 
         /* Avvio dei threads */
         for (Thread t : allThreads){
@@ -85,6 +88,7 @@ public class Main {
                 e.printStackTrace();
             }
         }
+
     }
 }
 
