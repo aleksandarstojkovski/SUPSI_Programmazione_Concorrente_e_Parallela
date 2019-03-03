@@ -2,5 +2,8 @@
 *               ES1
 ****************************************
 
-Autostrada e' "shared" and mutable, di conseguenza e' possibile avere problemi di race condition.
+Autostrada e' "shared" and mutable, di conseguenza e' possibile avere problemi di race condition,
+qualora venisse utilizzata una stessa istanza di autostrada in piu' istanze di un altro oggetto.
+
+
 

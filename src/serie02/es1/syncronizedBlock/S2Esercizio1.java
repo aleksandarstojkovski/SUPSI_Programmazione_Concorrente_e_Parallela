@@ -1,12 +1,9 @@
-package serie02.es1;
+package serie02.es1.syncronizedBlock;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 
 class Autostrada {
 	public int entrate = 0;
@@ -43,13 +40,14 @@ class Automobilista implements Runnable {
 
 		for (int i = 0; i < 500; i++) {
 			vaiVersoAutostrada();
-
-			autostrada.entrate++;
-
 			int pedaggioTratta = percorriAutostrada();
 
-			autostrada.uscite++;
-			autostrada.pedaggi += pedaggioTratta;
+			synchronized (autostrada){
+				autostrada.entrate++;
+				autostrada.uscite++;
+				autostrada.pedaggi += pedaggioTratta;
+			}
+
 			pedaggiPagati += pedaggioTratta;
 		}
 		System.out.println("Automobilista " + id + ": terminato");
@@ -75,6 +73,11 @@ class Automobilista implements Runnable {
 
 public class S2Esercizio1 {
 	public static void main(final String[] args) {
+
+		System.out.println("********************************************");
+		System.out.println("********** TEST SYNCRONIZED BLOCK **********");
+		System.out.println("********************************************");
+
 		final Collection<Automobilista> workers = new ArrayList<Automobilista>();
 		final Collection<Thread> threads = new ArrayList<Thread>();
 		final Random rand = new Random();
