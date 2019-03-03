@@ -1,0 +1,6 @@
+****************************************
+*               ES1
+****************************************
+
+Autostrada e' "shared" and mutable, di conseguenza e' possibile avere problemi di race condition.
+
