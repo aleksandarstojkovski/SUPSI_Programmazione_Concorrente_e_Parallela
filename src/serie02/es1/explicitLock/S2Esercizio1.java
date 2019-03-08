@@ -13,47 +13,68 @@ class Autostrada {
 	Lock readLock = lock.readLock();
 	Lock writeLock = lock.writeLock();
 
-	public int entrate = 0;
-	public int uscite = 0;
-	public int pedaggi = 0;
+	int entrate = 0;
+	int uscite = 0;
+	int pedaggi = 0;
 
 	public int getEntrate() {
+		int tmpEntrate;
 		readLock.lock();
-		int tmpEntrate=entrate;
-		readLock.unlock();
+		try {
+			tmpEntrate=entrate;
+		} finally {
+			readLock.unlock();
+		}
 		return tmpEntrate;
 	}
 
 	public int getUscite() {
-		readLock.lock();
 		int tmpUscite=uscite;
-		readLock.unlock();
-		return uscite;
+		readLock.lock();
+		try {
+			tmpUscite=uscite;
+		} finally {
+			readLock.unlock();
+		}
+		return tmpUscite;
 	}
 
 	public int getPedaggi() {
-		readLock.lock();
 		int tmpPedaggi=pedaggi;
-		readLock.unlock();
-		return pedaggi;
+		readLock.lock();
+		try {
+			tmpPedaggi=pedaggi;
+		} finally {
+			readLock.unlock();
+		}
+		return tmpPedaggi;
 	}
 
-	public void incrementaEntrate() {
+	void incrementaEntrate() {
 		writeLock.lock();
-		this.entrate++;
-		writeLock.unlock();
+		try {
+			this.entrate++;
+		} finally {
+			writeLock.unlock();
+		}
 	}
 
-	public void incrementaUscite() {
+	void incrementaUscite() {
 		writeLock.lock();
-		this.uscite++;
-		writeLock.unlock();
+		try {
+			this.uscite++;
+		} finally {
+			writeLock.unlock();
+		}
 	}
 
-	public void aggiungiPedaggio(int pedaggio) {
+	void aggiungiPedaggio(int pedaggio) {
 		writeLock.lock();
-		this.pedaggi+=pedaggio;
-		writeLock.unlock();
+		try{
+			this.pedaggi+=pedaggio;
+		} finally {
+			writeLock.unlock();
+		}
 	}
 }
 
