@@ -116,7 +116,6 @@ public synchronized void occupaSecondaParte(){
 
 public boolean occupa() {
 
-}
 	// Verifica disponibilita bagni liberi!
 	if (!occupaPrimaParte())
 		return false;
