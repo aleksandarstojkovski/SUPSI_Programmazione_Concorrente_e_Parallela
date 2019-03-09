@@ -1,0 +1,130 @@
+**********************************************************************
+*                              ES2
+**********************************************************************
+
+BagnoPubblico e' "shared" and mutable, di conseguenza e' possibile avere problemi di race condition,
+qualora venisse utilizzata una stessa istanza di BagnoPubblico in piu' istanze di un altro oggetto.
+
+********************
+* Explicit Lock
+********************
+
+Per risovere il problema utilizzando Explicit Locks, e' necessario circondare l'intero if da un lock,
+poiche' nel mezzo puo' avvenire un context switch. L'importante e' lasciare fuori dal lock la chiamata
+al metodo utilizzaBagno().
+
+Lock lock = new ReentrantLock();
+
+public boolean occupa() {
+	lock.lock();
+	try{
+		if (occupati < disponibili) {
+			// Bagno libero! Occupa
+			occupati++;
+			totUtilizzi++;
+		} else {
+			// Tutti i bagni sono occupati!
+			totOccupati++;
+			return false;
+		}
+	} finally {
+		lock.unlock();
+	}
+
+	// Utilizza il bagno
+	utilizzaBagno();
+
+	// Libera il bagno
+	lock.lock();
+	try{
+		occupati--;
+		return true;
+	} finally {
+		lock.unlock();
+	}
+}
+
+********************
+* Syncronized Block
+********************
+
+Risolvere il problema con un "Syncronized Block" sara' molto simile a come fatto con gli "Explicit Locks".
+Bastera' circondare la prima parte di codice e l'ultima pare di codice del metodo occupa()
+da un "syncronized" fatto su this, ovvero sulla classe BagnoPubblico, lasciando fuori dal syncronized
+la chiamata a occupaBagno().
+
+public boolean occupa() {
+
+    synchronized (this) {
+		// Verifica disponibilita bagni liberi!
+		if (occupati < disponibili) {
+			// Bagno libero! Occupa
+			occupati++;
+			totUtilizzi++;
+		} else {
+			// Tutti i bagni sono occupati!
+			totOccupati++;
+			return false;
+		}
+	}
+
+	// Utilizza il bagno
+	utilizzaBagno();
+
+	synchronized (this) {
+		// Libera il bagno
+		occupati--;
+	}
+
+	return true;
+
+}
+
+********************
+* Syncronized Method
+********************
+
+Per risolvere il problema utilizzando la strategia "Syncronized Method", sara' necessario
+effettura un po' di refactoring. Non e' possibile mettere "syncronized" tutto il metodo occupa()
+in quanto all'interno del metodo occupa() viene fata una chiamata a occupaBagno(), che non deve essere
+sincronizzata tra i thread. Quindi per risolvere il problema bisognera' scorporare la prima parte di codice
+del metodo occupa() e l'ultima parte di codice del metodo occupa() e inserirle in due metodi separati
+che saranno syncronized.
+
+public synchronized boolean occupaPrimaParte(){
+
+	// Verifica disponibilita bagni liberi!
+	if (occupati < disponibili) {
+		// Bagno libero! Occupa
+		occupati++;
+		totUtilizzi++;
+	} else {
+		// Tutti i bagni sono occupati!
+		totOccupati++;
+		return false;
+	}
+	return true;
+
+}
+
+public synchronized void occupaSecondaParte(){
+
+	// Libera il bagno
+	occupati--;
+
+}
+
+public boolean occupa() {
+
+}
+	// Verifica disponibilita bagni liberi!
+	if (!occupaPrimaParte())
+		return false;
+
+	// Utilizza il bagno
+	utilizzaBagno();
+
+	occupaSecondaParte();
+	return true;
+
+}

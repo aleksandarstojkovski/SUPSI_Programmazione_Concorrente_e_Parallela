@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class BagnoPubblico {
 
-	ReadWriteLock lock = new ReentrantReadWriteLock();
-	Lock readLock = lock.readLock();
-	Lock writeLock = lock.writeLock();
+	Lock lock = new ReentrantLock();
 
 	private int totUtilizzi;
 	private int totOccupati;
@@ -26,49 +25,34 @@ class BagnoPubblico {
 	}
 
 	public boolean occupa() {
-		// Verifica disponibilita bagni liberi!
-		int tmpOccupati;
-		int tmpDisplonbili;
-		readLock.lock();
 
-		try {
-			tmpOccupati = occupati;
-			tmpDisplonbili = disponibili;
-		} finally {
-			readLock.unlock();
-		}
-
-		if (tmpOccupati < tmpDisplonbili) {
-			// Bagno libero! Occupa
-			writeLock.lock();
-			try {
+		lock.lock();
+		try{
+			if (occupati < disponibili) {
+				// Bagno libero! Occupa
 				occupati++;
 				totUtilizzi++;
-			} finally {
-				writeLock.unlock();
-			}
-		} else {
-			// Tutti i bagni sono occupati!
-			writeLock.lock();
-			try {
+			} else {
+				// Tutti i bagni sono occupati!
 				totOccupati++;
-			} finally {
-				writeLock.unlock();
+				return false;
 			}
-			return false;
+		} finally {
+			lock.unlock();
 		}
 
 		// Utilizza il bagno
 		utilizzaBagno();
 
 		// Libera il bagno
-		writeLock.lock();
-		try {
+		lock.lock();
+		try{
 			occupati--;
+			return true;
 		} finally {
-			writeLock.unlock();
+			lock.unlock();
 		}
-		return true;
+
 	}
 
 	private void utilizzaBagno() {

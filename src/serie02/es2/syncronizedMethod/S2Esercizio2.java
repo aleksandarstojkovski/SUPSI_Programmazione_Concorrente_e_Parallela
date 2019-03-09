@@ -17,7 +17,7 @@ class BagnoPubblico {
 		this.totOccupati = 0;
 	}
 
-	public boolean occupa() {
+	public synchronized boolean occupaPrimaParte(){
 		// Verifica disponibilita bagni liberi!
 		if (occupati < disponibili) {
 			// Bagno libero! Occupa
@@ -28,12 +28,23 @@ class BagnoPubblico {
 			totOccupati++;
 			return false;
 		}
+		return true;
+	}
+
+	public synchronized void occupaSecondaParte(){
+		// Libera il bagno
+		occupati--;
+	}
+
+	public boolean occupa() {
+		// Verifica disponibilita bagni liberi!
+		if (!occupaPrimaParte())
+			return false;
 
 		// Utilizza il bagno
 		utilizzaBagno();
 
-		// Libera il bagno
-		occupati--;
+		occupaSecondaParte();
 		return true;
 	}
 

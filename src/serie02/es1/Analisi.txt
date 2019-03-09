@@ -1,9 +1,113 @@
-****************************************
-*               ES1
-****************************************
+**********************************************************************
+*                              ES1
+**********************************************************************
 
 Autostrada e' "shared" and mutable, di conseguenza e' possibile avere problemi di race condition,
 qualora venisse utilizzata una stessa istanza di autostrada in piu' istanze di un altro oggetto.
 
+********************
+* Explicit Lock
+********************
 
+Per risolvere il problema utilizzando explicit lock, ho dovuto modificare la logica di Autostrada.
+Perche' l'oggetto sul quale va applicato il lock e' autostrada.
 
+1) Ho creato un ReadWriteLock e i rispettivi readLock e writeLock:
+
+    ReadWriteLock lock = new ReentrantReadWriteLock();
+    Lock readLock = lock.readLock();
+    Lock writeLock = lock.writeLock();
+
+2) Mi sono assicurato che tutte le letture/scritture siano precedute da un lock:
+
+	public int getEntrate() {
+		int tmpEntrate;
+		readLock.lock();
+		try {
+			tmpEntrate=entrate;
+		} finally {
+			readLock.unlock();
+		}
+		return tmpEntrate;
+	}
+
+	public int getUscite() {
+		int tmpUscite=uscite;
+		readLock.lock();
+		try {
+			tmpUscite=uscite;
+		} finally {
+			readLock.unlock();
+		}
+		return tmpUscite;
+	}
+
+	public int getPedaggi() {
+		int tmpPedaggi=pedaggi;
+		readLock.lock();
+		try {
+			tmpPedaggi=pedaggi;
+		} finally {
+			readLock.unlock();
+		}
+		return tmpPedaggi;
+	}
+
+	void incrementaEntrate() {
+		writeLock.lock();
+		try {
+			this.entrate++;
+		} finally {
+			writeLock.unlock();
+		}
+	}
+
+	void incrementaUscite() {
+		writeLock.lock();
+		try {
+			this.uscite++;
+		} finally {
+			writeLock.unlock();
+		}
+	}
+
+	void aggiungiPedaggio(int pedaggio) {
+		writeLock.lock();
+		try{
+			this.pedaggi+=pedaggio;
+		} finally {
+			writeLock.unlock();
+		}
+	}
+}
+
+********************
+* Syncronized Block
+********************
+
+In questo caso, risolvere il problema e' molto piu semplice, dato che con un block
+syncronized e' possibile specificare l'oggetto sul quale applicare il lock.
+
+Bastera' circondare le operazioni che modificano l'autostrada in un blocco sincronizzato su autostrada.
+
+synchronized (autostrada){
+    autostrada.entrate++;
+    autostrada.uscite++;
+	autostrada.pedaggi += pedaggioTratta;
+}
+
+********************
+* Syncronized Method
+********************
+
+In questo caso, il method syncronized esegue la sincronizzazione su this.
+Per questo motivo il metodo deve essere parte della classe shared and mutable, quindi Autostrada.
+
+Per risolvere il problema ho quindi creato un metodo syncronized
+dentro alla classe Autostrada che aggiorna lo stato dell'autostrada.
+
+public synchronized void aggiornaStato(int pedaggio){
+	entrate++;
+	uscite++;
+	pedaggi+=pedaggio;
+}
