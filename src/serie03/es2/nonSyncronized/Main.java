@@ -32,5 +32,7 @@ public class Main {
             }
         }
 
+        System.out.println("Valore finale contatore: " + Sensore.getContatore());
+
     }
 }

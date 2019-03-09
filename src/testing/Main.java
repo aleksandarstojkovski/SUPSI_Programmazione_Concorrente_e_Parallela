@@ -100,8 +100,8 @@ public class Main {
     public static final int MAX_COUNTER = 120;
 
     public static void main(final String[] args) {
-        Counter counter = new CounterNoSync();
-        //Counter counter = new CounterVolatile();
+        //Counter counter = new CounterNoSync();
+        Counter counter = new CounterVolatile();
         //Counter counter = new CounterAtomic();
         //Counter counter = new CounterExplicit();
 
