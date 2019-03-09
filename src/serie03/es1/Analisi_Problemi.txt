@@ -1,0 +1,55 @@
+/*
+********************************************************************************
+*                               ES1
+*******************************************************************************
+
+In questo esercizio vi sono principalmente due problemi.
+
+Primo problema:
+
+La classe Worker contiene un campo statico "isRunning" inizialmente settato a "false". Il metodo run() di Worker
+contiene un ciclo while che aspetta finchè il campo "isRunning" non diventi true.
+Dal main viene settato il campo "isRunning" a true ma sembra che questo non abbia effetto sui thread, in quanto
+rimangono in attesa come se "isRunning" fosse ancora settato a "false".
+Questo avviene per colpa della cosi' detta "memory barrier", la modifica del campo "isRunning" viene fatta nella
+memoria cache del Thread main, ma non viene riportata nella cache dei thread, di conseguenza i thread non prendono
+il nuovo valore.
+Per risolvere il problema basteà rendere il campo "isRunning" volatile, in questo modo, Java si assicurera che ogni
+qual volta isRunning viene modificato, la modifica e' resa visibile a tutti i Thread.
+*/
+
+// prima
+public static boolean isRunning = false;
+
+// dopo
+public volatile static boolean isRunning = false;
+
+/*
+Secondo problema:
+
+Ogni thread incrementa un campo integer chiamato "finished" alla fine del metodo run(). Questo può generare problemi di
+race condition, in quanto il campo finished e' shared and mutable.
+Per risolvere il problema basterà trasformare "finished" in un AtomicInteger e modificare il codice di conseguenza.
+
+    // DICHIARAZIONE
+
+    // prima
+    public static int finished;
+    // dopo
+	public static AtomicInteger finished;
+
+    // INIZIALIZZAZIONE
+
+    // prima
+    finished=0;
+    // dopo
+    finished = new AtomicInteger(0);
+
+    // INCREMENTO
+
+    // prima
+    finished++;
+    // dopo
+	finished.incrementAndGet();
+
+*/
