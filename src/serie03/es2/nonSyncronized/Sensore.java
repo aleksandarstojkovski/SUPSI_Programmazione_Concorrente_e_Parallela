@@ -2,7 +2,7 @@ package serie03.es2.nonSyncronized;
 
 public class Sensore implements Runnable{
     private final int id;
-    private static int contatore;
+    public static int contatore;
     private final int soglia;
 
     Sensore(int id, int soglia){
@@ -10,10 +10,9 @@ public class Sensore implements Runnable{
         this.soglia=soglia;
     }
 
-
     @Override
     public void run() {
-
+        System.out.println("sono partito" + contatore);
         while (contatore<soglia){
             //wait
         }

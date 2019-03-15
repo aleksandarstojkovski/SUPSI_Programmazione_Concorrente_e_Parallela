@@ -1,0 +1,35 @@
+/*
+********************************************************************************
+*                               ES2
+********************************************************************************
+
+L'esercizio presenta sia problemi di visibilita' che problemi di atomicita', poiche'
+nel main incrementiamo il contatore:
+
+//Sensore.incrementaContatore(increment);
+
+Per questo motivo la soluzione di adottare una variabile di tipo volatile non puo' funzionare.
+*/
+
+*********
+* Soluzione con AtomicInteger
+*********
+
+// private static AtomicInteger contatore;
+// contatore = new AtomicInteger(0);
+
+*********
+* Soluzione con explicitLock
+*********
+
+- ho creato la classe counter, e ho assegnato un oggetto
+ counter condiviso tra tutti i Sensori. Il counter si occupa di eseguire opportunamente i lock.
+
+// Lock lock = new ReentrantLock();
+
+*********
+* Soluzione con volatileInteger
+*********
+
+// private volatile static int contatore;
+

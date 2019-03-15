@@ -11,8 +11,6 @@ public class Main {
         List<Thread> threads = new ArrayList<>();
         Random random = new Random();
         Counter counter = new Counter();
-        int totaleTuttiContatori=0;
-        int totaleTuttiIncrementiMain=0;
 
         for (int i=1; i <= 10; i++){
             Sensore sensore = new Sensore(i,i*10,counter);
@@ -28,7 +26,6 @@ public class Main {
             int timeToWait = random.nextInt(11)+5;
 
             counter.addValue(increment);
-            totaleTuttiIncrementiMain+=increment;
 
             try {
                 Thread.sleep(timeToWait);
@@ -45,18 +42,7 @@ public class Main {
             }
         }
 
-        for(Sensore sensore : sensori)
-            totaleTuttiContatori+=sensore.getMaxContatore();
-
-        System.out.println("\nTotale contatori di tutti i sensori: " + totaleTuttiContatori);
-        System.out.println("Totale incrementi effetuati nel main: " + totaleTuttiIncrementiMain);
         System.out.println("Valore finale contatore: " + counter.getValue());
-
-        if (totaleTuttiContatori+ counter.getValue() == totaleTuttiIncrementiMain){
-            System.out.println("\nRISULTATO CORRETTO: " + totaleTuttiContatori + " + " + counter.getValue() + " = " + (totaleTuttiContatori+ counter.getValue()) );
-        } else {
-            System.out.println("\nRISULTATO NON CORRETTO: " + totaleTuttiContatori + " + " + counter.getValue() + " != " + (totaleTuttiContatori+ counter.getValue()) );
-        }
 
     }
 }
