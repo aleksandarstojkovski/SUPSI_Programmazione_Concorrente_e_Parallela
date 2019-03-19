@@ -1,0 +1,36 @@
+************************************
+// Implicit Lock
+************************************
+Per proteggere il programma utilizzando lock impliciti, è bastato rendere i metodi increment() e readValue() syncronized.
+
+Simulation took: 9239 ms
+
+************************************
+// Explicit Lock
+************************************
+Per proteggere il programma utilizzando lock espliciti, ho creato un Lock statico, e ho eseguito il lock, in un blocco
+try/finally sia in lettura che scrittura.
+
+    private static final Lock lock = new ReentrantLock();
+
+Simulation took: 9376 ms
+
+************************************
+// ReadWrite Lock
+************************************
+Per proteggere il programma utilizzando read/write lock, ho creato un ReadWriteLock statico, e ho eseguito il lock, in un blocco
+try/finally sia in lettura che scrittura (in lettura utilizzando readLock() metre in scrittura utilizzando writeLock()).
+
+	private final static ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
+	private final static Lock readlock = rwlock.readLock();
+	private final static Lock writelock = rwlock.writeLock();
+
+Simulation took: 8595 ms
+
+
+************************************
+// Conclusioni
+************************************
+
+Il readWriteLock risulta molto più performantre rispetto lock impliciti/espliciti.
+Mentre il meno performante è il lock esplicito.
