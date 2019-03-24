@@ -1,0 +1,19 @@
+In questo esercizio il codice "pericoloso" è quello contenuto nel metodo resetIfAbove().
+Se avviene con context switch tra la prima e la seconda riga del metodo, e' probabile che il
+valore che leggiamo non e' quello che ci aspettiamo.
+
+		int currentAmount = S4Esercizio2.counter.get();
+		if (currentAmount < soglia)
+			return false;
+		S4Esercizio2.counter.set(0);
+		return true;
+
+Per risolvere il problema basta utilizzare l'idioma del CAS.
+
+		int currentAmount;
+		do{
+			currentAmount = S4Esercizio2.counter.get();
+			if (currentAmount < soglia)
+				return false;
+		}while(!S4Esercizio2.counter.compareAndSet(currentAmount,0));
+		return true;

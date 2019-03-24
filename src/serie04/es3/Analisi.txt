@@ -1,0 +1,19 @@
+In questo esercizio gli oggetti shared and mutable sono:
+
+		S4Esercizio3.home
+		S4Esercizio3.office
+		S4Esercizio3.mobile
+		S4Esercizio3.emergency
+		S4Esercizio3.version
+
+Questi "oggetti", tuttavia vengono modificati da un solo thread, il Main, per questo motivo
+non possono avvenire race condition.
+Quello che puo' accadere e' che si abbiano problemi di visibilita'.
+
+Per risovere il problema ho quindi fatto diventare questi campi "volatile".
+
+	    public volatile static int home;
+	    public volatile static int office;
+	    public volatile static int mobile;
+	    public volatile static int emergency;
+	    public volatile static int version;
