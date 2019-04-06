@@ -1,0 +1,11 @@
+Il problema in questo esercizio e' che il metodo occupaBagno() nella classe S6ServiziPubblici e' syncronized.
+In questo modo anche se i bagni sono in totale 6, e' come se fosse solo 1.
+
+Per risolvere il problema basta spostare la sincronizzazione nella clase Bagno.
+
+	public synchronized boolean provaOccupare() {
+		if (occupato)
+			return false;
+		this.occupato = true;
+		return true;
+	}
