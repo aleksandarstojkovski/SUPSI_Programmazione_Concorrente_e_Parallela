@@ -21,18 +21,6 @@ class Amico implements Runnable{
         this.outMailbox=out;
     }
 
-    public int getSentEmails() {
-        return sentEmails;
-    }
-
-    public int getReadEmails() {
-        return readEmails;
-    }
-
-    public int getId() {
-        return id;
-    }
-
     @Override
     public void run() {
         // send email
@@ -55,6 +43,18 @@ class Amico implements Runnable{
                 readEmails++;
             }
         }
+    }
+
+    public int getSentEmails() {
+        return sentEmails;
+    }
+
+    public int getReadEmails() {
+        return readEmails;
+    }
+
+    public int getId() {
+        return id;
     }
 }
 
