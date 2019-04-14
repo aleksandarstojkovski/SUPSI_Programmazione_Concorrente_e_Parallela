@@ -1,135 +1,98 @@
 package testing;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-class Sensor implements Runnable {
+class RemoveWorker implements Runnable {
     private final int id;
-    private final int threshold;
-    private final Counter counter;
-
-
-    Sensor(int id, int threshold, Counter counter) {
-        this.id = id;
-        this.threshold = threshold;
-        this.counter = counter;
+    RemoveWorker(int i) {
+        id = i;
     }
 
     @Override
     public void run() {
-        System.out.println("Sensor" + id + " started (threshold " + threshold + ") ");
+        while(!allEmpty()) {
+            Random random = new Random();
+            DayOfWeek dow = DayOfWeek.of(1 + random.nextInt(7));
 
-        while (counter.getValue() < threshold)
-            /*do nothing*/;
+            boolean isEmpty = false;
+            int tries=1;
+            do {
+                String old = Main.map.get(dow);
+                if(old.isEmpty()) {
+                    break;
+                }
 
-        System.out.println(String.format("Sensor%d: Above threshold %d", id, threshold));
-        counter.reset();
-    }
-}
+                if(Main.map.replace(dow, old, old.substring(1)))
+                    break;
+                else
+                    tries++;
+            } while(true);
 
-interface Counter {
-    int getValue();
-    void reset();
-    void add(int delta);
-}
-
-class CounterNoSync implements Counter {
-    private int value;
-
-    public int getValue() { return value; }
-    public void reset() { value = 0; }
-    public void add(int delta) { value += delta; }
-}
-
-class CounterVolatile implements Counter {
-    private volatile int value;
-
-    public int getValue() { return value; }
-    public void reset() { value = 0; }
-    public void add(int delta) { value += delta; }
-}
-
-class CounterAtomic implements Counter {
-    private AtomicInteger value = new AtomicInteger();
-
-    public int getValue() { return value.get(); }
-    public void reset() { value.set(0); }
-    public void add(int delta) { value.getAndAdd(delta); }
-}
-
-class CounterExplicit implements Counter {
-    private int value;
-    Lock lock = new ReentrantLock();
-
-    public int getValue() {
-        lock.lock();
-        try {
-            return value;
-        } finally {
-            lock.unlock();
+            if(tries > 1)
+                System.out.printf("RemoveWorker%d: Updated %s after %d tries\n", id, dow, tries);
         }
     }
 
-    public void reset() {
-        lock.lock();
-        try {
-            value = 0;
-        } finally {
-            lock.unlock();
+    private boolean allEmpty() {
+        for (DayOfWeek d : DayOfWeek.values()) {
+            if(!Main.map.get(d).isEmpty())
+                return false;
         }
-    }
 
-    public void add(int delta) {
-        lock.lock();
-        try {
-            value += delta;
-        } finally {
-            lock.unlock();
-        }
+        return true;
     }
 }
-
 
 public class Main {
-    private final static int THRESHOLD_RANGE = 10;
-    private final static int NUM_SENSORS = 10;
-    public static final int MAX_COUNTER = 120;
+    final static ConcurrentMap<DayOfWeek, String> map = new ConcurrentHashMap<>();
 
-    public static void main(final String[] args) {
-        //Counter counter = new CounterNoSync();
-        Counter counter = new CounterVolatile();
-        //Counter counter = new CounterAtomic();
-        //Counter counter = new CounterExplicit();
-
-        final List<Sensor> allSensors = new ArrayList<>();
-        final List<Thread> allThread = new ArrayList<>();
-        for (int i = 1; i <= NUM_SENSORS; i++) {
-            final int threshold = THRESHOLD_RANGE * i;
-            final Sensor target = new Sensor(i, threshold, counter);
-            allSensors.add(target);
-            final Thread e = new Thread(target);
-            allThread.add(e);
-            e.start();
+    public static void main(String[] args) {
+        for(DayOfWeek dow : DayOfWeek.values()) {
+            String str = getRandomString();
+            map.put(dow, str);
         }
 
-        do {
-            //System.out.println(String.format("Counter %d", Sensor.value));
+        printMap();
 
-            int delay = ThreadLocalRandom.current().nextInt(5, 11);
-            int randomValue = ThreadLocalRandom.current().nextInt(1, 9);
-            counter.add(randomValue);
-            //Sensor.value += randomValue;
+        List<Thread> threads = new ArrayList<>();
+        for (int i=0; i<30; i++)
+            threads.add(new Thread(new RemoveWorker(i)));
+
+        for (final Thread t : threads)
+            t.start();
+
+        for (final Thread t : threads) {
             try {
-                Thread.sleep(delay);
+                t.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //} while (Sensor.value < MAX_COUNTER);
-        } while (counter.getValue() < MAX_COUNTER);
-        System.out.println("Main thread completed");
+        }
+
+        printMap();
+
+        System.out.println("Simulazione finita: " + new Date().toString());
+    }
+
+    private static void printMap() {
+        for(DayOfWeek dow : DayOfWeek.values()) {
+            System.out.println(dow + ": " + map.get(dow));
+        }
+    }
+
+    private static String getRandomString() {
+        Random random = new Random();
+        final StringBuilder sb = new StringBuilder();
+        for(int i=0; i<10000; i++) {
+            char c = (char) ('A' + random.nextInt(26));
+            sb.append(c);
+        }
+        return sb.toString();
     }
 }

@@ -1,0 +1,5 @@
+Avete scritto il codice del programma più sotto, ma quando lo utilizzate riscontrate un'esecuzione poco performante.
+
+Per migliorarne le performances, avete deciso di realizzarne una nuova versione che utilizzi le variabili atomiche in sostituzione dei locks.
+
+Sviluppate la nuova variante di programma e consegnatela quale soluzione dell'esercizio.
