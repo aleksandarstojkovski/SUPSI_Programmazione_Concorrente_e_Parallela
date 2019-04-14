@@ -1,0 +1,53 @@
+L’oggetto sharedPhraes e’ una collection non thread safe. I reader cercano di iterare sulla collezione
+mentre il writer ne cambia il contenuto aggiungendo nuovi elementi.
+
+Soluzione1 - blockSyncronizes
+			synchronized (S7Esercizio2.sharedPhrase) {
+				final Iterator<String> iterator = S7Esercizio2.sharedPhrase.iterator();
+				while (iterator.hasNext()) {
+					sb.append(iterator.next());
+					sb.append(" ");
+				}
+			}
+		for (int i = 0; i < 10; i++) {
+			synchronized (S7Esercizio2.sharedPhrase) {
+				S7Esercizio2.sharedPhrase.add(getWord());
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+Soluzione2 - concurrentCollections
+S7Esercizio2.sharedPhrase = new CopyOnWriteArrayList<>(list);
+
+Soluzione3 - readWriteLock
+			// Build phrase string from shares words
+			S7Esercizio2.readLock.lock();
+			try {
+				final Iterator<String> iterator = S7Esercizio2.sharedPhrase.iterator();
+				while (iterator.hasNext()) {
+					sb.append(iterator.next());
+					sb.append(" ");
+				}
+			}finally {
+				S7Esercizio2.readLock.unlock();
+			}
+		for (int i = 0; i < 10; i++) {
+			S7Esercizio2.sharedPhrase.add(getWord());
+			try {
+				Thread.sleep(1000);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+Soluzione4 - syncronizedCollection
+			synchronized (S7Esercizio2.sharedPhrase) {
+				final Iterator<String> iterator = S7Esercizio2.sharedPhrase.iterator();
+				while (iterator.hasNext()) {
+					sb.append(iterator.next());
+					sb.append(" ");
+				}
+			}
