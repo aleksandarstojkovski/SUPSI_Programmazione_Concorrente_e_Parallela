@@ -1,6 +1,7 @@
 package serie09.es2;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -57,9 +58,17 @@ class AssemblingWorker implements Runnable {
 					depots.add(randomDepot);
 			}
 
+			// lock innestati sono molto pericolosi in quanto possono creare un deadlock
+			// A deadlock occurs when two threads obtain locks in different order.
+			// Thread 1 locks A, waits for B. Thread 2 has locked B, and now waits for A
+
+			// sorting the depots array should fix the issue
+			depots.sort(Comparator.comparingInt(Depot::getId));
+
 			final Depot supplier1 = depots.get(0);
 			final Depot supplier2 = depots.get(1);
 			final Depot supplier3 = depots.get(2);
+
 
 			log("assembling from : " + supplier1 + ", " + supplier2 + ", " + supplier3);
 			synchronized (supplier1) {
