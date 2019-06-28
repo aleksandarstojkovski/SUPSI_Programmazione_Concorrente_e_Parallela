@@ -19,3 +19,4 @@
 ### Serie 8 - Scheduling e Coordinazione
 ### Serie 9 - Liveness
 ### Serie 10 - Task Executor Framework
+### Serie 11 - Parallel Streams, Completable Futures e Reactive Streams
